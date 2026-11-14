@@ -93,13 +93,12 @@ print_success "Directories verified"
 
 # 3. Setup Runtime & Core Packages
 print_step "Configuring Aira Agent Core Engine..."
-# If local source exists, sync from it, else download latest release package
-LOCAL_SOURCE="/data/data/com.termux/files/home/aira-cursor-core"
+LOCAL_SOURCE="/data/data/com.termux/files/home/aira-gemini-core"
 if [ -d "${LOCAL_SOURCE}" ]; then
   cp -r "${LOCAL_SOURCE}/"* "${INSTALL_DIR}/"
 else
-  # Remote fallback download
-  DOWNLOAD_URL="https://raw.githubusercontent.com/aira-group/aira-cli-kit/main/dist/aira-agent-${ARCH}.tar.gz"
+  # Remote fallback
+  DOWNLOAD_URL="https://raw.githubusercontent.com/airagroupoftechnology/Aira-CLI-Kit/main/dist/aira-core.tar.gz"
   if command -v curl >/dev/null 2>&1; then
     curl -fsSL "${DOWNLOAD_URL}" | tar -xz -C "${INSTALL_DIR}" 2>/dev/null || true
   fi
@@ -110,21 +109,20 @@ print_success "Core runtime package deployed"
 print_step "Configuring global 'aira' executable..."
 LAUNCHER_FILE="${BIN_DIR}/aira"
 
-if [ "${IS_TERMUX}" = true ]; then
-  cat << 'EOF' > "${LAUNCHER_FILE}"
-#!/data/data/com.termux/files/usr/bin/bash
-export AIRA_AGENT_HOME="/data/data/com.termux/files/home/.local/share/aira-agent"
-export AIRA_API_ENDPOINT="https://airaai-8ibs.onrender.com/v1"
-exec grun "${AIRA_AGENT_HOME}/node" "${AIRA_AGENT_HOME}/index.js" "$@"
-EOF
-else
-  cat << 'EOF' > "${LAUNCHER_FILE}"
+cat << 'EOF' > "${LAUNCHER_FILE}"
 #!/usr/bin/env bash
-export AIRA_AGENT_HOME="${HOME}/.local/share/aira-agent"
+export AIRA_CLI_HOME="${HOME}/.aira"
 export AIRA_API_ENDPOINT="https://airaai-8ibs.onrender.com/v1"
-exec "${AIRA_AGENT_HOME}/node" "${AIRA_AGENT_HOME}/index.js" "$@"
-EOF
+export GOOGLE_GEMINI_BASE_URL="https://airaai-8ibs.onrender.com/v1"
+if [ -d "/data/data/com.termux/files" ]; then
+  AIRA_CORE="/data/data/com.termux/files/home/aira-gemini-core"
+  [ -d "/data/data/com.termux/files/home/.local/share/aira-agent" ] && AIRA_CORE="/data/data/com.termux/files/home/.local/share/aira-agent"
+  exec node "${AIRA_CORE}/bundle/aira.js" "$@"
+else
+  AIRA_CORE="${HOME}/.local/share/aira-agent"
+  exec node "${AIRA_CORE}/bundle/aira.js" "$@"
 fi
+EOF
 
 chmod +x "${LAUNCHER_FILE}"
 print_success "Command '${BOLD}aira${NC}' linked to ${LAUNCHER_FILE}"
