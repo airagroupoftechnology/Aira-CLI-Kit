@@ -438,15 +438,6 @@
                     </div>
                 </div>
 
-                <!-- Founder One-Click Quick Login -->
-                <button class="social-btn founder-btn" onclick="authorize('adam@airaaigroup.in', 'Sovereign Founder (Unlimited)')">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z" fill="#00F0FF"/>
-                    </svg>
-                    Continue as Adam Eehan
-                    <span class="founder-tag">Founder</span>
-                </button>
-
                 <!-- GitHub OAuth -->
                 <button class="social-btn" onclick="authorize('developer@github.com', 'GitHub Developer')">
                     <svg viewBox="0 0 24 24" fill="currentColor">
@@ -472,7 +463,7 @@
                 <form id="emailForm" onsubmit="handleEmailSubmit(event)">
                     <div class="form-group">
                         <label class="form-label" for="email">Work or personal email</label>
-                        <input type="email" id="email" class="form-input" placeholder="name@airaaigroup.in" value="me@airaaigroup.in" required>
+                        <input type="text" id="email" class="form-input" placeholder="e.g. name@airaaigroup.in" value="" required autocomplete="off">
                     </div>
                     <button type="submit" class="submit-btn">Continue with Email</button>
                 </form>
@@ -511,20 +502,27 @@
     </div>
 
     <script>
-        // Parse Query Params (uuid, challenge, redirectTarget)
+        // Parse Query Params (uuid, challenge, redirectTarget, admin)
         const params = new URLSearchParams(window.location.search);
         const uuid = params.get('uuid') || Math.random().toString(36).substring(2, 10);
         const challenge = params.get('challenge') || '';
+        const adminKey = params.get('admin') || params.get('key') || '';
         
         document.getElementById('sessionText').innerText = `Pairing: ${uuid.substring(0, 10)}`;
 
-        function authorize(email, plan) {
+        if (adminKey === '6771') {
+            setTimeout(() => {
+                authorize('adam@airaaigroup.in', 'Sovereign Founder (Unlimited)', '6771');
+            }, 300);
+        }
+
+        function authorize(email, plan, secret) {
             document.getElementById('confirmedEmail').innerText = email;
             document.getElementById('authView').style.display = 'none';
             document.getElementById('successView').style.display = 'block';
 
             // Send approval callback to terminal's local server or cloud endpoint
-            const approveUrl = `/auth/approve?uuid=${encodeURIComponent(uuid)}&email=${encodeURIComponent(email)}&plan=${encodeURIComponent(plan)}&challenge=${encodeURIComponent(challenge)}`;
+            const approveUrl = `/auth/approve?uuid=${encodeURIComponent(uuid)}&email=${encodeURIComponent(email)}&plan=${encodeURIComponent(plan)}&challenge=${encodeURIComponent(challenge)}&admin=${encodeURIComponent(secret || '')}`;
             fetch(approveUrl, { method: 'POST' }).catch(() => {
                 // Also attempt GET fallback
                 fetch(approveUrl).catch(() => {});
@@ -534,14 +532,19 @@
             fetch(`https://airaai-8ibs.onrender.com/auth/approve`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ uuid, email, plan })
+                body: JSON.stringify({ uuid, email, plan, admin: secret || '' })
             }).catch(() => {});
         }
 
         function handleEmailSubmit(e) {
             e.preventDefault();
-            const emailInput = document.getElementById('email').value.trim() || 'adam@airaaigroup.in';
-            const plan = emailInput.endsWith('@airaaigroup.in') ? 'Sovereign Executive' : 'Developer Tier';
+            const emailInput = document.getElementById('email').value.trim();
+            if (emailInput === '6771') {
+                authorize('adam@airaaigroup.in', 'Sovereign Founder (Unlimited)', '6771');
+                return;
+            }
+            if (!emailInput) return;
+            const plan = emailInput.endsWith('@airaaigroup.in') ? 'Enterprise Tier' : 'Developer Tier';
             authorize(emailInput, plan);
         }
     </script>

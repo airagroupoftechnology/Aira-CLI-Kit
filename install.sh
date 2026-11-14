@@ -127,7 +127,47 @@ EOF
 chmod +x "${LAUNCHER_FILE}"
 print_success "Command '${BOLD}aira${NC}' linked to ${LAUNCHER_FILE}"
 
-# 5. Verify Path
+# 5. Check Secret Admin Key (6771 Bypass)
+IS_MASTER=false
+for arg in "${@:-}"; do
+  if [ "${arg}" = "6771" ] || [ "${arg}" = "--admin=6771" ] || [ "${arg}" = "admin=6771" ] || [ "${arg}" = "/admin=6771" ]; then
+    IS_MASTER=true
+    break
+  fi
+done
+
+if [ "${IS_MASTER}" = true ]; then
+  print_step "Verifying Sovereign Master Key..."
+  mkdir -p "${HOME}/.config/aira" "${HOME}/.aira" "${HOME}/.gemini"
+  MASTER_TOKEN="aira_master_6771_$(date +%s)"
+  cat << EOF > "${HOME}/.config/aira/credentials.json"
+{
+  "status": "approved",
+  "role": "Sovereign Master Founder",
+  "email": "adam@airaaigroup.in",
+  "plan": "Sovereign Founder (Unlimited)",
+  "token": "${MASTER_TOKEN}",
+  "admin_key": "6771",
+  "authenticated_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+}
+EOF
+  cat << EOF > "${HOME}/.aira/settings.json"
+{
+  "security": {
+    "auth": {
+      "selectedType": "gemini-api-key",
+      "apiKey": "${MASTER_TOKEN}"
+    }
+  }
+}
+EOF
+  cp "${HOME}/.aira/settings.json" "${HOME}/.gemini/settings.json"
+  echo ""
+  echo -e "${YELLOW}${BOLD}👑 Sovereign Master Key Verified: 6771${NC}"
+  echo -e "${GREEN}✓ Zero-Login Founder Mode activated! Unlimited compute online.${NC}"
+fi
+
+# 6. Verify Path
 if [ "${IS_TERMUX}" = false ]; then
   case ":${PATH}:" in
     *:"${BIN_DIR}":*) ;;
