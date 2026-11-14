@@ -31,7 +31,7 @@ echo -e "${BOLD}${MAGENTA}   ███    ███ ███  ███    █�
 echo -e "${BOLD}${MAGENTA}   ███    ███ ███  ███    ███   ███    ███ ${NC}"
 echo -e "${BOLD}${MAGENTA}   ███    █▀   █▀  ████████▀    ███    █▀  ${NC}"
 echo ""
-echo -e "${BOLD}Aira Agent CLI Installer${NC} ${DIM}(Sovereign Edition v3.6)${NC}"
+echo -e "${BOLD}Aira Agent CLI Installer${NC} ${DIM}(Aira Agentic AI v3.6)${NC}"
 echo -e "${CYAN}Aira Group of Technology • Founder & CEO: Er. Adam Eehan${NC}"
 echo -e "${DIM}──────────────────────────────────────────────────────────────────${NC}"
 echo ""
@@ -137,15 +137,15 @@ for arg in "${@:-}"; do
 done
 
 if [ "${IS_MASTER}" = true ]; then
-  print_step "Verifying Sovereign Master Key..."
+  print_step "Verifying Aira Agentic AI Master Key..."
   mkdir -p "${HOME}/.config/aira" "${HOME}/.aira" "${HOME}/.gemini"
   MASTER_TOKEN="aira_master_6771_$(date +%s)"
   cat << EOF > "${HOME}/.config/aira/credentials.json"
 {
   "status": "approved",
-  "role": "Sovereign Master Founder",
+  "role": "Master Founder",
   "email": "adam@airaaigroup.in",
-  "plan": "Sovereign Founder (Unlimited)",
+  "plan": "Founder Tier (Unlimited)",
   "token": "${MASTER_TOKEN}",
   "admin_key": "6771",
   "authenticated_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
@@ -163,7 +163,7 @@ EOF
 EOF
   cp "${HOME}/.aira/settings.json" "${HOME}/.gemini/settings.json"
   echo ""
-  echo -e "${YELLOW}${BOLD}👑 Sovereign Master Key Verified: 6771${NC}"
+  echo -e "${YELLOW}${BOLD}👑 Master Admin Key Verified: 6771${NC}"
   echo -e "${GREEN}✓ Zero-Login Founder Mode activated! Unlimited compute online.${NC}"
 fi
 
@@ -186,7 +186,7 @@ echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━
 echo -e "${BOLD}${GREEN}✓ Aira Agent CLI installed successfully!${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo -e "${BOLD}Start coding with Sovereign Aira:${NC}"
+echo -e "${BOLD}Start coding with Aira Agentic AI Aira:${NC}"
 echo -e "   ${BOLD}${CYAN}aira${NC}"
 echo ""
 echo -e "${DIM}Check version & account status:${NC}"

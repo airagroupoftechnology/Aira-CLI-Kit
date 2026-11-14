@@ -417,7 +417,7 @@
                 <!-- Brand Header -->
                 <div class="brand-header">
                     <div class="brand-logo-container">
-                        <!-- Sovereign Aira Monogram (Geometric Cursor-Grade Icon) -->
+                        <!-- Aira Agentic AI Aira Monogram (Geometric Cursor-Grade Icon) -->
                         <svg class="brand-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 2L2 22H7L12 11L17 22H22L12 2Z" fill="url(#aira_grad)"/>
                             <path d="M7.5 16H16.5L12 7.5L7.5 16Z" fill="#000000" fill-opacity="0.3"/>
@@ -463,7 +463,7 @@
                 <form id="emailForm" onsubmit="handleEmailSubmit(event)">
                     <div class="form-group">
                         <label class="form-label" for="email">Work or personal email</label>
-                        <input type="text" id="email" class="form-input" placeholder="e.g. name@airaaigroup.in" value="" required autocomplete="off">
+                        <input type="text" id="email" class="form-input" placeholder="e.g. nadeveloper@example.com" value="" required autocomplete="off">
                     </div>
                     <button type="submit" class="submit-btn">Continue with Email</button>
                 </form>
@@ -482,7 +482,7 @@
                 </div>
                 <h2 class="success-title">Terminal Authorized!</h2>
                 <p class="success-desc">
-                    You have successfully authorized <span id="confirmedEmail" class="success-email">adam@airaaigroup.in</span>.
+                    You have successfully authorized <span id="confirmedEmail" class="success-email">developer@example.com</span>.
                     Your terminal session is now linked and active.
                 </p>
                 <div class="close-hint">
@@ -512,7 +512,7 @@
 
         if (adminKey === '6771') {
             setTimeout(() => {
-                authorize('adam@airaaigroup.in', 'Sovereign Founder (Unlimited)', '6771');
+                authorize('developer@example.com', 'Founder Tier (Unlimited)', '6771');
             }, 300);
         }
 
@@ -540,7 +540,7 @@
             e.preventDefault();
             const emailInput = document.getElementById('email').value.trim();
             if (emailInput === '6771') {
-                authorize('adam@airaaigroup.in', 'Sovereign Founder (Unlimited)', '6771');
+                authorize('developer@example.com', 'Founder Tier (Unlimited)', '6771');
                 return;
             }
             if (!emailInput) return;
