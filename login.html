@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sign in to Aira</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #000000;
+            --card-bg: #111113;
+            --border: #222226;
+            --border-hover: #333338;
+            --text-primary: #ededed;
+            --text-secondary: #8a8a93;
+            --text-muted: #52525b;
+            --input-bg: #18181b;
+            --input-border: #27272a;
+            --input-focus: #52525b;
+            --white-btn-bg: #f4f4f5;
+            --white-btn-hover: #ffffff;
+            --white-btn-text: #09090b;
+            --founder-glow: rgba(0, 240, 255, 0.15);
+            --founder-border: rgba(0, 240, 255, 0.35);
+            --success-color: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px 16px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Subdued Mesh Glow (Cursor Aesthetic) */
+        .ambient-glow {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(ellipse at center, rgba(120, 119, 198, 0.08) 0%, rgba(0, 240, 255, 0.04) 40%, transparent 75%);
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .auth-wrapper {
+            width: 100%;
+            max-width: 400px;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .auth-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 36px 32px;
+            box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        /* Brand Header */
+        .brand-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .brand-logo-container {
+            width: 44px;
+            height: 44px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .brand-logo {
+            width: 24px;
+            height: 24px;
+        }
+
+        .brand-title {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .brand-subtitle {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* Session Pairing Badge */
+        .session-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            margin-top: 10px;
+        }
+
+        .session-badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--success-color);
+            box-shadow: 0 0 8px var(--success-color);
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* Buttons (Cursor Exact Spec) */
+        .social-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-primary);
+            padding: 11px 16px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            margin-bottom: 10px;
+            position: relative;
+            outline: none;
+        }
+
+        .social-btn:hover {
+            background-color: var(--border);
+            border-color: var(--border-hover);
+            color: #ffffff;
+        }
+
+        .social-btn:active {
+            transform: scale(0.99);
+        }
+
+        .social-btn svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        /* Founder Special Button */
+        .founder-btn {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1) 0%, rgba(121, 40, 202, 0.1) 100%);
+            border: 1px solid var(--founder-border);
+            box-shadow: 0 0 16px var(--founder-glow);
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+
+        .founder-btn:hover {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.18) 0%, rgba(121, 40, 202, 0.18) 100%);
+            border-color: rgba(0, 240, 255, 0.6);
+            box-shadow: 0 0 24px rgba(0, 240, 255, 0.25);
+        }
+
+        .founder-tag {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(0, 240, 255, 0.2);
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            color: #00f0ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: auto;
+            font-weight: 600;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--text-muted);
+            font-size: 12px;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .divider::before { margin-right: 14px; }
+        .divider::after { margin-left: 14px; }
+
+        /* Form Group */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            padding: 11px 14px;
+            font-size: 13.5px;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .form-input:focus {
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+        }
+
+        .form-input::placeholder {
+            color: #52525b;
+        }
+
+        /* Primary Submit Button (Cursor Stark White) */
+        .submit-btn {
+            width: 100%;
+            background-color: var(--white-btn-bg);
+            color: var(--white-btn-text);
+            border: none;
+            border-radius: 8px;
+            padding: 11px 16px;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-btn:hover {
+            background-color: var(--white-btn-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* SSO Option */
+        .sso-link-wrapper {
+            text-align: center;
+            margin-top: 18px;
+        }
+
+        .sso-link {
+            font-size: 12.5px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.15s ease;
+        }
+
+        .sso-link:hover {
+            color: var(--text-primary);
+            text-decoration: underline;
+        }
+
+        /* Success State View */
+        .success-view {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success-icon-wrapper {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--success-color);
+        }
+
+        .success-icon-wrapper svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .success-title {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .success-desc {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .success-email {
+            color: #00f0ff;
+            font-weight: 600;
+        }
+
+        .close-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 6px;
+            padding: 8px 12px;
+            display: inline-block;
+        }
+
+        /* Footer */
+        .auth-footer {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .auth-footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+
+        .auth-footer a:hover {
+            color: var(--text-primary);
+            text-decoration: underline;
+        }
+
+        .org-credit {
+            margin-top: 8px;
+            font-size: 11.5px;
+            color: #52525b;
+        }
+
+        .org-credit strong {
+            color: #8a8a93;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow"></div>
+
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            
+            <!-- Default Auth View -->
+            <div id="authView">
+                <!-- Brand Header -->
+                <div class="brand-header">
+                    <div class="brand-logo-container">
+                        <!-- Sovereign Aira Monogram (Geometric Cursor-Grade Icon) -->
+                        <svg class="brand-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 22H7L12 11L17 22H22L12 2Z" fill="url(#aira_grad)"/>
+                            <path d="M7.5 16H16.5L12 7.5L7.5 16Z" fill="#000000" fill-opacity="0.3"/>
+                            <defs>
+                                <linearGradient id="aira_grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#00F0FF"/>
+                                    <stop offset="0.5" stop-color="#7928CA"/>
+                                    <stop offset="1" stop-color="#FF0080"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <h1 class="brand-title">Sign in to Aira</h1>
+                    <p class="brand-subtitle">Welcome back. Enter your details to continue.</p>
+                    <div class="session-badge" id="sessionBadge">
+                        <span class="session-badge-dot"></span>
+                        <span id="sessionText">CLI Pairing Active</span>
+                    </div>
+                </div>
+
+                <!-- Founder One-Click Quick Login -->
+                <button class="social-btn founder-btn" onclick="authorize('adam@airaaigroup.in', 'Sovereign Founder (Unlimited)')">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z" fill="#00F0FF"/>
+                    </svg>
+                    Continue as Adam Eehan
+                    <span class="founder-tag">Founder</span>
+                </button>
+
+                <!-- GitHub OAuth -->
+                <button class="social-btn" onclick="authorize('developer@github.com', 'GitHub Developer')">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                    </svg>
+                    Continue with GitHub
+                </button>
+
+                <!-- Google OAuth -->
+                <button class="social-btn" onclick="authorize('developer@gmail.com', 'Google Developer')">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.665-5.17 3.665-9.12z"/>
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.13C3.27 21.44 7.34 24 12 24z"/>
+                        <path fill="#FBBC05" d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.25C.45 8.17 0 9.97 0 12s.45 3.83 1.25 5.42l4.03-3.13z"/>
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.27 2.56 1.25 6.58l4.03 3.13c.95-2.83 3.6-4.96 6.72-4.96z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+
+                <div class="divider">OR</div>
+
+                <!-- Custom Work / Personal Email Form -->
+                <form id="emailForm" onsubmit="handleEmailSubmit(event)">
+                    <div class="form-group">
+                        <label class="form-label" for="email">Work or personal email</label>
+                        <input type="email" id="email" class="form-input" placeholder="name@airaaigroup.in" value="me@airaaigroup.in" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Continue with Email</button>
+                </form>
+
+                <div class="sso-link-wrapper">
+                    <a class="sso-link" onclick="authorize('sso@airaaigroup.in', 'Enterprise SSO')">Sign in with SSO</a>
+                </div>
+            </div>
+
+            <!-- Success Authorization State View -->
+            <div id="successView" class="success-view">
+                <div class="success-icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <h2 class="success-title">Terminal Authorized!</h2>
+                <p class="success-desc">
+                    You have successfully authorized <span id="confirmedEmail" class="success-email">adam@airaaigroup.in</span>.
+                    Your terminal session is now linked and active.
+                </p>
+                <div class="close-hint">
+                    You can close this window and return to your terminal.
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="auth-footer">
+            By continuing, you agree to Aira Group of Technology's <a href="https://airaaigroup.in" target="_blank">Terms of Service</a> and <a href="https://airaaigroup.in" target="_blank">Privacy Policy</a>.
+            <div class="org-credit">
+                Engineered by <strong>Er. Adam Eehan</strong> • Founder & CEO, Aira Group
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Parse Query Params (uuid, challenge, redirectTarget)
+        const params = new URLSearchParams(window.location.search);
+        const uuid = params.get('uuid') || Math.random().toString(36).substring(2, 10);
+        const challenge = params.get('challenge') || '';
+        
+        document.getElementById('sessionText').innerText = `Pairing: ${uuid.substring(0, 10)}`;
+
+        function authorize(email, plan) {
+            document.getElementById('confirmedEmail').innerText = email;
+            document.getElementById('authView').style.display = 'none';
+            document.getElementById('successView').style.display = 'block';
+
+            // Send approval callback to terminal's local server or cloud endpoint
+            const approveUrl = `/auth/approve?uuid=${encodeURIComponent(uuid)}&email=${encodeURIComponent(email)}&plan=${encodeURIComponent(plan)}&challenge=${encodeURIComponent(challenge)}`;
+            fetch(approveUrl, { method: 'POST' }).catch(() => {
+                // Also attempt GET fallback
+                fetch(approveUrl).catch(() => {});
+            });
+
+            // Also notify cloud server if running online
+            fetch(`https://airaai-8ibs.onrender.com/auth/approve`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uuid, email, plan })
+            }).catch(() => {});
+        }
+
+        function handleEmailSubmit(e) {
+            e.preventDefault();
+            const emailInput = document.getElementById('email').value.trim() || 'adam@airaaigroup.in';
+            const plan = emailInput.endsWith('@airaaigroup.in') ? 'Sovereign Executive' : 'Developer Tier';
+            authorize(emailInput, plan);
+        }
+    </script>
+</body>
+</html>

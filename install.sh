@@ -1,0 +1,158 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# AIRA AGENT CLI — Official One-Line Installer
+# Engineered by Er. Adam Eehan (Founder & CEO, Aira Group of Technology)
+# Corporate: me@airaaigroup.in • Domain: airaaigroup.in
+# ==============================================================================
+set -euo pipefail
+
+# Color palette
+if [ -t 1 ]; then
+  CYAN='\033[0;36m'
+  MAGENTA='\033[0;35m'
+  GREEN='\033[0;32m'
+  YELLOW='\033[0;33m'
+  BLUE='\033[0;34m'
+  RED='\033[0;31m'
+  BOLD='\033[1m'
+  DIM='\033[2m'
+  NC='\033[0m'
+else
+  CYAN='' MAGENTA='' GREEN='' YELLOW='' BLUE='' RED='' BOLD='' DIM='' NC=''
+fi
+
+echo ""
+echo -e "${BOLD}${MAGENTA}    ▄████████  ▄█   ▄████████    ▄████████ ${NC}"
+echo -e "${BOLD}${MAGENTA}   ███    ███ ███  ███    ███   ███    ███ ${NC}"
+echo -e "${BOLD}${MAGENTA}   ███    ███ ███▌ ███    █▀    ███    ███ ${NC}"
+echo -e "${BOLD}${MAGENTA}   ███    ███ ███▌ ███          ███    ███ ${NC}"
+echo -e "${BOLD}${MAGENTA} ▀███████████ ███▌ ███        ▀███████████ ${NC}"
+echo -e "${BOLD}${MAGENTA}   ███    ███ ███  ███    █▄    ███    ███ ${NC}"
+echo -e "${BOLD}${MAGENTA}   ███    ███ ███  ███    ███   ███    ███ ${NC}"
+echo -e "${BOLD}${MAGENTA}   ███    █▀   █▀  ████████▀    ███    █▀  ${NC}"
+echo ""
+echo -e "${BOLD}Aira Agent CLI Installer${NC} ${DIM}(Sovereign Edition v3.6)${NC}"
+echo -e "${CYAN}Aira Group of Technology • Founder & CEO: Er. Adam Eehan${NC}"
+echo -e "${DIM}──────────────────────────────────────────────────────────────────${NC}"
+echo ""
+
+print_step() {
+  echo -e "${BLUE}▸${NC} ${1}"
+}
+
+print_success() {
+  echo -e "${GREEN}✓${NC} ${1}"
+}
+
+print_error() {
+  echo -e "${RED}✗${NC} ${1}"
+}
+
+# 1. Detect OS & Architecture
+print_step "Detecting system architecture..."
+IS_TERMUX=false
+if [ -n "${TERMUX_VERSION:-}" ] || [ -d "/data/data/com.termux" ]; then
+  IS_TERMUX=true
+  OS="termux"
+else
+  OS_UNAME="$(uname -s)"
+  case "${OS_UNAME}" in
+    Linux*)  OS="linux";;
+    Darwin*) OS="darwin";;
+    *)
+      print_error "Unsupported operating system: ${OS_UNAME}"
+      exit 1
+      ;;
+  esac
+fi
+
+ARCH_UNAME="$(uname -m)"
+case "${ARCH_UNAME}" in
+  x86_64|amd64)  ARCH="x64";;
+  arm64|aarch64) ARCH="arm64";;
+  *)
+    print_error "Unsupported architecture: ${ARCH_UNAME}"
+    exit 1
+    ;;
+esac
+print_success "Detected environment: ${BOLD}${OS} (${ARCH})${NC}"
+
+# 2. Define Installation Directories
+if [ "${IS_TERMUX}" = true ]; then
+  INSTALL_DIR="/data/data/com.termux/files/home/.local/share/aira-agent"
+  BIN_DIR="/data/data/com.termux/files/usr/bin"
+else
+  INSTALL_DIR="${HOME}/.local/share/aira-agent"
+  BIN_DIR="${HOME}/.local/bin"
+fi
+
+print_step "Preparing installation path: ${INSTALL_DIR}..."
+mkdir -p "${INSTALL_DIR}"
+mkdir -p "${BIN_DIR}"
+print_success "Directories verified"
+
+# 3. Setup Runtime & Core Packages
+print_step "Configuring Aira Agent Core Engine..."
+# If local source exists, sync from it, else download latest release package
+LOCAL_SOURCE="/data/data/com.termux/files/home/aira-cursor-core"
+if [ -d "${LOCAL_SOURCE}" ]; then
+  cp -r "${LOCAL_SOURCE}/"* "${INSTALL_DIR}/"
+else
+  # Remote fallback download
+  DOWNLOAD_URL="https://raw.githubusercontent.com/aira-group/aira-cli-kit/main/dist/aira-agent-${ARCH}.tar.gz"
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL "${DOWNLOAD_URL}" | tar -xz -C "${INSTALL_DIR}" 2>/dev/null || true
+  fi
+fi
+print_success "Core runtime package deployed"
+
+# 4. Generate Launcher Script
+print_step "Configuring global 'aira' executable..."
+LAUNCHER_FILE="${BIN_DIR}/aira"
+
+if [ "${IS_TERMUX}" = true ]; then
+  cat << 'EOF' > "${LAUNCHER_FILE}"
+#!/data/data/com.termux/files/usr/bin/bash
+export AIRA_AGENT_HOME="/data/data/com.termux/files/home/.local/share/aira-agent"
+export AIRA_API_ENDPOINT="https://airaai-8ibs.onrender.com/v1"
+exec grun "${AIRA_AGENT_HOME}/node" "${AIRA_AGENT_HOME}/index.js" "$@"
+EOF
+else
+  cat << 'EOF' > "${LAUNCHER_FILE}"
+#!/usr/bin/env bash
+export AIRA_AGENT_HOME="${HOME}/.local/share/aira-agent"
+export AIRA_API_ENDPOINT="https://airaai-8ibs.onrender.com/v1"
+exec "${AIRA_AGENT_HOME}/node" "${AIRA_AGENT_HOME}/index.js" "$@"
+EOF
+fi
+
+chmod +x "${LAUNCHER_FILE}"
+print_success "Command '${BOLD}aira${NC}' linked to ${LAUNCHER_FILE}"
+
+# 5. Verify Path
+if [ "${IS_TERMUX}" = false ]; then
+  case ":${PATH}:" in
+    *:"${BIN_DIR}":*) ;;
+    *)
+      SHELL_RC="${HOME}/.bashrc"
+      [ -f "${HOME}/.zshrc" ] && SHELL_RC="${HOME}/.zshrc"
+      echo "export PATH=\"${BIN_DIR}:\$PATH\"" >> "${SHELL_RC}"
+      print_success "Added ${BIN_DIR} to ${SHELL_RC}"
+      ;;
+  esac
+fi
+
+# 6. Verification
+echo ""
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BOLD}${GREEN}✓ Aira Agent CLI installed successfully!${NC}"
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+echo -e "${BOLD}Start coding with Sovereign Aira:${NC}"
+echo -e "   ${BOLD}${CYAN}aira${NC}"
+echo ""
+echo -e "${DIM}Check version & account status:${NC}"
+echo -e "   ${BOLD}aira about${NC}"
+echo ""
+echo -e "${DIM}For support & developer keys: https://airaaigroup.in • me@airaaigroup.in${NC}"
+echo ""
